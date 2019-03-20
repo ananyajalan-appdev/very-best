@@ -6,6 +6,8 @@ class Dish < ApplicationRecord
 
   belongs_to :cuisine,
              :counter_cache => true
+            
+             
 
   # Indirect associations
 
@@ -16,6 +18,13 @@ class Dish < ApplicationRecord
   has_many   :fans,
              :through => :bookmarks,
              :source => :user
+  
+  has_many  :venues,
+            :through => :bookmarks
+            
+   has_many :users,
+            :through => :bookmarks
+            
 
   # Validations
 

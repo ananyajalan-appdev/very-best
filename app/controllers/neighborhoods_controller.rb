@@ -1,85 +1,84 @@
-class NeighborhoodsController < ApplicationController
+class DishesController < ApplicationController
   def index
-    @q = Neighborhood.ransack(params.fetch("q", nil))
-    @neighborhoods = @q.result(:distinct => true).includes(:venues).page(params.fetch("page", nil)).per(10)
-
-    render("neighborhoods_templates/index.html.erb")
+    @q = Dish.ransack(params.fetch("q", nil))
+    @dishes = @q.result(:distinct => true).includes(:cuisine, :bookmarks, :fans, :specialists).page(params.fetch("page", nil)).per(10)
+    
+    render("dishes_templates/index.html.erb")
   end
 
   def show
-    @venue = Venue.new
-    @neighborhood = Neighborhood.find(params.fetch("id"))
+    @bookmark = Bookmark.new
+    @dish = Dish.find(params.fetch("id"))
 
-    render("neighborhoods_templates/show.html.erb")
+    render("dishes_templates/show.html.erb")
   end
 
   def new
-    @neighborhood = Neighborhood.new
+    @dish = Dish.new
 
-    render("neighborhoods_templates/new.html.erb")
+    render("dishes_templates/new.html.erb")
   end
 
   def create
-    @neighborhood = Neighborhood.new
+    @dish = Dish.new
 
-    @neighborhood.name = params.fetch("name")
-    @neighborhood.city = params.fetch("city")
-    @neighborhood.state = params.fetch("state")
+    @dish.name = params.fetch("name")
+    @dish.user_id = params.fetch("user_id")
+    @dish.cuisine_id = params.fetch("cuisine_id")
 
-    save_status = @neighborhood.save
+    save_status = @dish.save
 
     if save_status == true
       referer = URI(request.referer).path
 
       case referer
-      when "/neighborhoods/new", "/create_neighborhood"
-        redirect_to("/neighborhoods")
+      when "/dishes/new", "/create_dish"
+        redirect_to("/dishes")
       else
-        redirect_back(:fallback_location => "/", :notice => "Neighborhood created successfully.")
+        redirect_back(:fallback_location => "/", :notice => "Dish created successfully.")
       end
     else
-      render("neighborhoods_templates/new.html.erb")
+      render("dishes_templates/new.html.erb")
     end
   end
 
   def edit
-    @neighborhood = Neighborhood.find(params.fetch("id"))
+    @dish = Dish.find(params.fetch("id"))
 
-    render("neighborhoods_templates/edit.html.erb")
+    render("dishes_templates/edit.html.erb")
   end
 
   def update
-    @neighborhood = Neighborhood.find(params.fetch("id"))
+    
+    @dish = Dish.find(params.fetch("id"))
+    @dish.name = params.fetch("name")
+    @dish.cuisine_id = params.fetch("cuisine_id")
 
-    @neighborhood.name = params.fetch("name")
-    @neighborhood.city = params.fetch("city")
-    @neighborhood.state = params.fetch("state")
-
-    save_status = @neighborhood.save
+    save_status = @dish.save
 
     if save_status == true
       referer = URI(request.referer).path
 
       case referer
-      when "/neighborhoods/#{@neighborhood.id}/edit", "/update_neighborhood"
-        redirect_to("/neighborhoods/#{@neighborhood.id}", :notice => "Neighborhood updated successfully.")
+      when "/dishes/#{@dish.id}/edit", "/update_dish"
+        redirect_to("/dishes/#{@dish.id}", :notice => "Dish updated successfully.")
       else
-        redirect_back(:fallback_location => "/", :notice => "Neighborhood updated successfully.")
+        redirect_back(:fallback_location => "/", :notice => "Dish updated successfully.")
       end
     else
-      render("neighborhoods_templates/edit.html.erb")
+      render("dishes_templates/edit.html.erb")
     end
-  end
+  end 
 
   def destroy
-    @neighborhood = Neighborhood.find(params.fetch("id"))
+    @dish = Dish.find(params.fetch("id"))
 
-    @neighborhood.destroy
+    @dish.destroy
 
-    if URI(request.referer).path == "/neighborhoods/#{@neighborhood.id}"
-      redirect_to("/", :notice => "Neighborhood deleted.")
+    if URI(request.referer).path == "/dishes/#{@dish.id}"
+      redirect_to("/", :notice => "Dish deleted.")
     else
-      redirect_back(:fallback_location => "/", :notice => "Neighborhood deleted.")
+      redirect_back(:fallback_location => "/", :notice => "Dish deleted.")
     end
   end
 end
