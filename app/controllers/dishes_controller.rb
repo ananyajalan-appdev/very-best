@@ -23,6 +23,7 @@ class DishesController < ApplicationController
     @dish = Dish.new
 
     @dish.name = params.fetch("name")
+    @dish.user_id = params.fetch("user_id")
     @dish.cuisine_id = params.fetch("cuisine_id")
 
     save_status = @dish.save
@@ -48,8 +49,8 @@ class DishesController < ApplicationController
   end
 
   def update
+    
     @dish = Dish.find(params.fetch("id"))
-
     @dish.name = params.fetch("name")
     @dish.cuisine_id = params.fetch("cuisine_id")
 
